@@ -28,7 +28,7 @@ function draw_img(canv2d, imgsrc, x, y) {
   const img_to_draw = new Image();
   img_to_draw.src = imgsrc;
   img_to_draw.onload = function() {
-    canv2d.drawImage(img_to_draw, x, y, 150, 150); 
+    canv2d.drawImage(img_to_draw, x, y, 150, 150);
   };
 }
 
