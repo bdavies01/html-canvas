@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Canvas msg="Message placeholder" />
+    <Canvas></Canvas>
   </div>
 </template>
 
