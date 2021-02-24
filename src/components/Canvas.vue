@@ -1,7 +1,7 @@
 <template>
   <div class="background">
     <h1>{{ message }}</h1>
-    <canvas id="canvasElement" width="600" height="600"> </canvas>
+    <canvas id="canvasElement" width="600" height="600" style="border:1px solid #000000;"> </canvas>
   </div>
 </template>
 
@@ -15,15 +15,15 @@ export default {
         orangeRect: {
           name: "orange rectangle",
           type: "shape",
-          x: 50,
-          y: 50,
+          x: 100,
+          y: 100,
           w: 100,
           l: 175
         },
         clown: {
           name: "clown",
           type: "img",
-          x: 300,
+          x: 350,
           y: 100,
           w: 150,
           l: 150,
@@ -33,7 +33,7 @@ export default {
           name: "hand",
           type: "img",
           x: 100,
-          y: 300,
+          y: 350,
           w: 150,
           l: 150,
           path: "assets/hand.jpg"
@@ -42,8 +42,8 @@ export default {
       circleDict: {
         circle: {
           name: "circle",
-          x: 400,
-          y: 400,
+          x: 425,
+          y: 425,
           radius: 50
         }
       }
@@ -69,8 +69,44 @@ export default {
         isIntersectCircle(this, pos, circle);
       }
     });
+  },
+  computed: {
+    updateStatus() {
+      return this.$store.state.idx;
+    }
+  },
+  watch: {
+    updateStatus() {
+        const canvas = document.getElementById("canvasElement");
+        const ctx = canvas.getContext("2d");
+        update(this)
+        ctx.clearRect(0, 0, 600, 600);
+        draw(ctx, this.rectDict, this.circleDict);
+    }
   }
 };
+
+function update(obj) {
+  const rotationAngle = Math.PI / 2;
+  for (var ridx in obj.rectDict) {
+    const rectangle = obj.rectDict[ridx];
+    const prevX = rectangle.x;
+    rectangle.x = 225 + (rectangle.x - 225) * Math.cos(rotationAngle) -
+      Math.sin(rotationAngle) * (rectangle.y - 225);
+    rectangle.y = 225 + (prevX - 225) * Math.sin(rotationAngle) +
+      Math.cos(rotationAngle) * (rectangle.y - 225);
+  }
+
+
+  for (var cidx in obj.circleDict) {
+    const circle = obj.circleDict[cidx];
+    const prevX = circle.x;
+    circle.x = 300 + (circle.x - 300) * Math.cos(rotationAngle) -
+      Math.sin(rotationAngle) * (circle.y - 300);
+    circle.y = 300 + (prevX - 300) * Math.sin(rotationAngle) +
+      Math.cos(rotationAngle) * (circle.y - 300);
+  }
+}
 
 function draw(ctx, rectDict, circleDict) {
   for (var ridx in rectDict) {

@@ -10,7 +10,8 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    idx: 0 //starting at 0 to be able to %4
+    idx: 0, //starting at 0 to be able to %4
+    pendingUpdate: 0
   }
 });
 
