@@ -9,7 +9,8 @@ export default {
   name: "Rotate",
   methods: {
     incrementState: function() {
-      console.log("epic!");
+      this.$store.state.idx = (this.$store.state.idx + 1) % 4;
+      console.log(this.$store.state.idx);
     }
   }
 };

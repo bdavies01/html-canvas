@@ -10,17 +10,12 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    idx: 1
-  },
-  mutations: {
-    setState(state, n) {
-      state.idx = n;
-    }
+    idx: 0 //starting at 0 to be able to %4
   }
 });
 
 new Vue({
   router,
-  store: store,
+  store,
   render: h => h(App)
 }).$mount("#app");
