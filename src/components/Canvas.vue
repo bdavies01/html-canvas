@@ -52,34 +52,7 @@ export default {
   mounted: function() {
     const canvas = document.getElementById("canvasElement");
     const ctx = canvas.getContext("2d");
-
-    for (var ridx in this.rectDict) {
-      const rectangle = this.rectDict[ridx];
-      if (rectangle.type == "shape") {
-        ctx.fillStyle = "orange";
-        ctx.fillRect(rectangle.x, rectangle.y, rectangle.w, rectangle.l);
-      } else if (rectangle.type == "img") {
-        const imgToDraw = new Image();
-        imgToDraw.src = rectangle.path;
-        imgToDraw.onload = function() {
-          ctx.drawImage(
-            imgToDraw,
-            rectangle.x,
-            rectangle.y,
-            rectangle.w,
-            rectangle.l
-          ); //prettier wants this formatting
-        };
-      }
-    }
-
-    for (var cidx in this.circleDict) {
-      const circle = this.circleDict[cidx];
-      ctx.beginPath();
-      ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI, false);
-      ctx.fillStyle = "red";
-      ctx.fill();
-    }
+    draw(ctx, this.rectDict, this.circleDict);
 
     canvas.addEventListener("mousemove", e => {
       const rect = canvas.getBoundingClientRect();
@@ -98,6 +71,36 @@ export default {
     });
   }
 };
+
+function draw(ctx, rectDict, circleDict) {
+  for (var ridx in rectDict) {
+    const rectangle = rectDict[ridx];
+    if (rectangle.type == "shape") {
+      ctx.fillStyle = "orange";
+      ctx.fillRect(rectangle.x, rectangle.y, rectangle.w, rectangle.l);
+    } else if (rectangle.type == "img") {
+      const imgToDraw = new Image();
+      imgToDraw.src = rectangle.path;
+      imgToDraw.onload = function() {
+        ctx.drawImage(
+          imgToDraw,
+          rectangle.x,
+          rectangle.y,
+          rectangle.w,
+          rectangle.l
+        ); //prettier wants this formatting
+      };
+    }
+  }
+
+  for (var cidx in circleDict) {
+    const circle = circleDict[cidx];
+    ctx.beginPath();
+    ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI, false);
+    ctx.fillStyle = "red";
+    ctx.fill();
+  }
+}
 
 function isIntersectCircle(obj, point, circle) {
   var dist = Math.sqrt((point.x - circle.x) ** 2 + (point.y - circle.y) ** 2);
