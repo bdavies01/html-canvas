@@ -10,7 +10,6 @@ export default {
   methods: {
     incrementState: function() {
       this.$store.state.idx = (this.$store.state.idx + 1) % 4;
-      this.$store.state.pendingUpdate = 1;
     }
   }
 };
