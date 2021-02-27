@@ -29,7 +29,8 @@ export default {
           xNew: 100,
           yNew: 100,
           w: 100,
-          l: 175
+          l: 175,
+          isDragging: false
         },
         clown: {
           name: "clown",
@@ -42,6 +43,7 @@ export default {
           yNew: 100,
           w: 150,
           l: 150,
+          isDragging: false,
           path: "assets/clown.jpg"
         },
         hand: {
@@ -55,6 +57,7 @@ export default {
           yNew: 350,
           w: 150,
           l: 150,
+          isDragging: false,
           path: "assets/hand.jpg"
         }
       },
@@ -67,7 +70,8 @@ export default {
           yOld: 425,
           xNew: 425,
           yNew: 425,
-          radius: 50
+          radius: 50,
+          isDragging: false
         }
       }
     };
@@ -75,6 +79,7 @@ export default {
   mounted: function() {
     this.canvas = document.getElementById("canvasElement");
     this.ctx = this.canvas.getContext("2d");
+    this.boundingRect = this.canvas.getBoundingClientRect();
     this.handImage = new Image();
     this.handImage.src = "assets/hand.jpg";
     this.handImage.onload = () => {
@@ -84,7 +89,7 @@ export default {
         this.rectDict.hand.y,
         this.rectDict.hand.w,
         this.rectDict.hand.l
-      ); //prettier wants this formatting
+      );
     };
     this.clownImage = new Image();
     this.clownImage.src = "assets/clown.jpg";
@@ -95,23 +100,83 @@ export default {
         this.rectDict.clown.y,
         this.rectDict.clown.w,
         this.rectDict.clown.l
-      ); 
+      );
     };
     this.draw();
 
     this.canvas.addEventListener("mousemove", e => {
-      const rect = this.canvas.getBoundingClientRect();
       const pos = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
+        x: e.clientX - this.boundingRect.left,
+        y: e.clientY - this.boundingRect.top
       };
       for (var ridx in this.rectDict) {
         const rectangle = this.rectDict[ridx];
-        this.isIntersectRect(pos, rectangle);
+        if (this.isIntersectRect(pos, rectangle)) {
+          this.message = rectangle.name;
+          if (rectangle.isDragging) {
+            rectangle.x = pos.x - rectangle.w / 2 - this.dragDiffX;
+            rectangle.y = pos.y - rectangle.l / 2 - this.dragDiffY;
+            this.draw();
+          }
+        } else if (
+          this.message == "Default" ||
+          this.message == rectangle.name
+        ) {
+          this.message = "Default";
+        }
       }
       for (var cidx in this.circleDict) {
         const circle = this.circleDict[cidx];
-        this.isIntersectCircle(pos, circle);
+        if (this.isIntersectCircle(pos, circle)) {
+          this.message = circle.name;
+          if (circle.isDragging) {
+            circle.x = pos.x - this.dragDiffX;
+            circle.y = pos.y - this.dragDiffY;
+            this.draw();
+          }
+        } else if (this.message == "Default" || this.message == circle.name) {
+          this.message = "Default";
+        }
+      }
+    });
+    this.canvas.addEventListener("mousedown", e => {
+      const pos = {
+        x: e.clientX - this.boundingRect.left,
+        y: e.clientY - this.boundingRect.top
+      };
+      for (var ridx in this.rectDict) {
+        const rectangle = this.rectDict[ridx];
+        if (this.isIntersectRect(pos, rectangle)) {
+          rectangle.isDragging = true;
+          this.dragDiffX = pos.x - rectangle.x - rectangle.w / 2;
+          this.dragDiffY = pos.y - rectangle.y - rectangle.l / 2;
+        }
+      }
+      for (var cidx in this.circleDict) {
+        const circle = this.circleDict[cidx];
+        if (this.isIntersectCircle(pos, circle)) {
+          circle.isDragging = true;
+          this.dragDiffX = pos.x - circle.x;
+          this.dragDiffY = pos.y - circle.y;
+        }
+      }
+    });
+    this.canvas.addEventListener("mouseup", e => {
+      const pos = {
+        x: e.clientX - this.boundingRect.left,
+        y: e.clientY - this.boundingRect.top
+      };
+      for (var ridx in this.rectDict) {
+        const rectangle = this.rectDict[ridx];
+        if (this.isIntersectRect(pos, rectangle)) {
+          rectangle.isDragging = false;
+        }
+      }
+      for (var cidx in this.circleDict) {
+        const circle = this.circleDict[cidx];
+        if (this.isIntersectCircle(pos, circle)) {
+          circle.isDragging = false;
+        }
       }
     });
   },
@@ -218,12 +283,13 @@ export default {
       }
     },
     isIntersectCircle: function(point, circle) {
-      var dist = Math.sqrt((point.x - circle.x) ** 2 + (point.y - circle.y) ** 2);
+      var dist = Math.sqrt(
+        (point.x - circle.x) ** 2 + (point.y - circle.y) ** 2
+      );
       if (dist < circle.radius) {
-        this.message = circle.name;
-      } else if (this.message == "Default" || this.message == circle.name) {
-        this.message = "Default";
+        return true;
       }
+      return false;
     },
     isIntersectRect: function(point, rect) {
       if (
@@ -232,10 +298,9 @@ export default {
         point.y >= rect.y &&
         point.y <= rect.y + rect.l
       ) {
-        this.message = rect.name;
-      } else if (this.message == "Default" || this.message == rect.name) {
-        this.message = "Default";
+        return true;
       }
+      return false;
     }
   }
 };
