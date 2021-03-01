@@ -116,6 +116,9 @@ export default {
           if (rectangle.isDragging) {
             rectangle.x = pos.x - rectangle.w / 2 - this.dragDiffX;
             rectangle.y = pos.y - rectangle.l / 2 - this.dragDiffY;
+            if (Math.abs(rectangle.x + rectangle.w / 2 - 300) < 25) {
+              rectangle.x = 300 - rectangle.w / 2;
+            }
             this.draw();
           }
         } else if (
@@ -132,6 +135,9 @@ export default {
           if (circle.isDragging) {
             circle.x = pos.x - this.dragDiffX;
             circle.y = pos.y - this.dragDiffY;
+            if (Math.abs(circle.x - 300) < 25) {
+              circle.x = 300;
+            }
             this.draw();
           }
         } else if (this.message == "Default" || this.message == circle.name) {
@@ -248,6 +254,10 @@ export default {
     },
     draw: function() {
       this.ctx.clearRect(0, 0, 600, 600);
+      this.ctx.beginPath();
+      this.ctx.moveTo(300, 50);
+      this.ctx.lineTo(300, 550);
+      this.ctx.stroke();
       for (var ridx in this.rectDict) {
         const rectangle = this.rectDict[ridx];
         if (rectangle.type == "shape") {
